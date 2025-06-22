@@ -52,6 +52,11 @@ tmux attach-session -t president
 ```bash
 # まずPRESIDENTで認証を実施
 tmux send-keys -t president 'claude' C-m
+
+# 自動でYesするモードはこれ↓
+tmux send-keys -t president 'claude --dangerously-skip-permissions' C-m
+
+.claude/settings.local.jsonのdenyに自動で実行したくないコマンドは設定できるよ
 ```
 認証プロンプトに従って許可を与えてください。
 
@@ -59,6 +64,8 @@ tmux send-keys -t president 'claude' C-m
 ```bash
 # 認証完了後、multiagentセッションを一括起動
 for i in {0..3}; do tmux send-keys -t multiagent:0.$i 'claude' C-m; done
+
+for i in {0..3}; do tmux send-keys -t multiagent:0.$i 'claude --dangerously-skip-permissions' C-m; done
 ```
 
 ### 4. デモ実行
@@ -67,6 +74,7 @@ PRESIDENTセッションで直接入力：
 ```
 あなたはpresidentです。指示書に従って
 ```
+これで、instructions/president.mdを読み込む
 
 ## 📜 指示書について
 

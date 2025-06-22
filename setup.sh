@@ -53,14 +53,15 @@ for i in {0..3}; do
     
     # 作業ディレクトリ設定
     tmux send-keys -t "multiagent:0.$i" "cd $(pwd)" C-m
+    tmux send-keys -t "multiagent:0.$i" "source ~/.zshrc" C-m
     
     # カラープロンプト設定
     if [ $i -eq 0 ]; then
         # boss1: 赤色
-        tmux send-keys -t "multiagent:0.$i" "export PS1='(\[\033[1;31m\]${PANE_TITLES[$i]}\[\033[0m\]) \[\033[1;32m\]\w\[\033[0m\]\$ '" C-m
+        tmux send-keys -t "multiagent:0.$i" "export PS1='(%{\033[1;31m%}${PANE_TITLES[$i]}%{\033[0m%}) %{\033[1;32m%}%~%{\033[0m%}\$ '" C-m
     else
         # workers: 青色
-        tmux send-keys -t "multiagent:0.$i" "export PS1='(\[\033[1;34m\]${PANE_TITLES[$i]}\[\033[0m\]) \[\033[1;32m\]\w\[\033[0m\]\$ '" C-m
+        tmux send-keys -t "multiagent:0.$i" "export PS1='(%{\033[1;34m%}${PANE_TITLES[$i]}%{\033[0m%}) %{\033[1;32m%}%~%{\033[0m%}\$ '" C-m
     fi
     
     # ウェルカムメッセージ
@@ -75,7 +76,8 @@ log_info "👑 presidentセッション作成開始..."
 
 tmux new-session -d -s president
 tmux send-keys -t president "cd $(pwd)" C-m
-tmux send-keys -t president "export PS1='(\[\033[1;35m\]PRESIDENT\[\033[0m\]) \[\033[1;32m\]\w\[\033[0m\]\$ '" C-m
+tmux send-keys -t president "source ~/.zshrc" C-m
+tmux send-keys -t president "export PS1='(%{\033[1;35m%}PRESIDENT%{\033[0m%}) %{\033[1;32m%}%~%{\033[0m%}\$ '" C-m
 tmux send-keys -t president "echo '=== PRESIDENT セッション ==='" C-m
 tmux send-keys -t president "echo 'プロジェクト統括責任者'" C-m
 tmux send-keys -t president "echo '========================'" C-m

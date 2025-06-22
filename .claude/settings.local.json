@@ -10,7 +10,22 @@
       "Bash(*worker*_done.txt*)",
       "Bash(mkdir:*)",
       "Bash(then)",
-      "Bash(else)"
+      "Bash(else)",
+      "Bash([ -f ./tmp/worker2_done.txt ])",
+      "Bash([ -f ./tmp/worker3_done.txt ])",
+      "Bash(fi)",
+      "Bash([ -f ./tmp/worker2_done.txt ])",
+      "Bash([ -f ./tmp/worker3_done.txt ])",
+      "Bash(then echo \"全員の作業完了を確認（最後の完了者として報告）\")",
+      "Bash(else echo \"他のworkerの完了を待機中...\")",
+      "Bash(fi)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint)",
+      "Bash(find:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   }
