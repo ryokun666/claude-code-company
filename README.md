@@ -1,103 +1,88 @@
-# 🤖 Tmux Multi-Agent Communication Demo
+# 🤖 AIエージェントによるWebアプリ開発デモ
 
-Agent同士がやり取りするtmux環境のデモシステム
+複数のAIエージェントが協調して、Next.jsアプリケーションを開発するデモ環境です。
 
 ## 🎯 デモ概要
 
-PRESIDENT → BOSS → Workers の階層型指示システムを体感できます
+**President** → **Boss (PM)** → **Workers (Developers)** の階層型指示システムを通じて、仕様書に基づいたWebアプリケーション開発のプロセスをシミュレートします。
 
-### 👥 エージェント構成
+### 👥 エージェントの役割
+
+-   **👑 PRESIDENT**: 開発したいアプリケーションの概要を指示します。
+-   **🎯 BOSS (Project Manager)**: 仕様書を読み解き、開発タスクを分解して各Workerに指示します。
+-   **👷 WORKERS (Developers)**: 担当するコード（UI、ページ、APIなど）を実装します。
 
 ```
 📊 PRESIDENT セッション (1ペイン)
-└── PRESIDENT: プロジェクト統括責任者
+└── PRESIDENT: プロジェクトのオーナー
 
 📊 multiagent セッション (4ペイン)  
-├── boss1: チームリーダー
-├── worker1: 実行担当者A
-├── worker2: 実行担当者B
-└── worker3: 実行担当者C
+├── boss1: プロジェクトマネージャー
+├── worker1: 開発者 (UI担当)
+├── worker2: 開発者 (ページ担当)
+└── worker3: 開発者 (API担当)
 ```
 
-## 🚀 クイックスタート
+## 🚀 使い方
 
-### 0. リポジトリのクローン
+### 1. 仕様書の準備
 
-```bash
-git clone https://github.com/nishimoto265/Claude-Code-Communication.git
-cd Claude-Code-Communication
-```
+`docs/specifications.md` に、開発したいWebアプリケーションの仕様を記述します。
+（例：顧客管理システムの要件、画面レイアウト、APIエンドポイントの定義など）
 
-### 1. tmux環境構築
+### 2. 環境構築
 
-⚠️ **注意**: 既存の `multiagent` と `president` セッションがある場合は自動的に削除されます。
+⚠️ **注意**: 既存の `multiagent` と `president` tmuxセッションがある場合は自動的に削除されます。
 
 ```bash
 ./setup.sh
 ```
 
-### 2. セッションアタッチ
+### 3. エージェントの起動
 
+各ターミナルで `claude` コマンドを実行し、エージェントを起動・認証します。
+
+**Presidentの起動:**
 ```bash
-# マルチエージェント確認
-tmux attach-session -t multiagent
-
-# プレジデント確認（別ターミナルで）
+# President用ターミナルで実行
 tmux attach-session -t president
+claude --dangerously-skip-permissions
 ```
 
-### 3. Claude Code起動
-
-**手順1: President認証**
+**BossとWorkerの起動:**
 ```bash
-# まずPRESIDENTで認証を実施
-tmux send-keys -t president 'claude' C-m
-
-# 自動でYesするモードはこれ↓
-tmux send-keys -t president 'claude --dangerously-skip-permissions' C-m
-
-.claude/settings.local.jsonのdenyに自動で実行したくないコマンドは設定できるよ
-```
-認証プロンプトに従って許可を与えてください。
-
-**手順2: Multiagent一括起動**
-```bash
-# 認証完了後、multiagentセッションを一括起動
-for i in {0..3}; do tmux send-keys -t multiagent:0.$i 'claude' C-m; done
-
+# multiagent用ターミナルで実行
+tmux attach-session -t multiagent
 for i in {0..3}; do tmux send-keys -t multiagent:0.$i 'claude --dangerously-skip-permissions' C-m; done
 ```
 
-### 4. デモ実行
+### 4. 開発開始の指示
 
-PRESIDENTセッションで直接入力：
+**President**セッションで、開発開始の指示を出します。
+
 ```
-あなたはpresidentです。指示書に従って
+あなたはpresidentです。指示書に従ってください。
 ```
-これで、instructions/president.mdを読み込む
 
-## 📜 指示書について
+これにより、`instructions/president.md` が読み込まれ、開発プロセスが開始されます。
 
-各エージェントの役割別指示書：
-- **PRESIDENT**: `instructions/president.md`
-- **boss1**: `instructions/boss.md` 
-- **worker1,2,3**: `instructions/worker.md`
+## 📜 指示書と仕様書
 
-**Claude Code参照**: `CLAUDE.md` でシステム構造を確認
+各エージェントは、以下のドキュメントに従って行動します。
 
-**要点:**
-- **PRESIDENT**: 「あなたはpresidentです。指示書に従って」→ boss1に指示送信
-- **boss1**: PRESIDENT指示受信 → workers全員に指示 → 完了報告
-- **workers**: Hello World実行 → 完了ファイル作成 → 最後の人が報告
+-   **全体方針**: `instructions/president.md`
+-   **開発管理**: `instructions/boss.md`
+-   **実装作業**: `instructions/worker.md`
+-   **開発要件**: `docs/specifications.md`
 
 ## 🎬 期待される動作フロー
 
-```
-1. PRESIDENT → boss1: "あなたはboss1です。Hello World プロジェクト開始指示"
-2. boss1 → workers: "あなたはworker[1-3]です。Hello World 作業開始"  
-3. workers → ./tmp/ファイル作成 → 最後のworker → boss1: "全員作業完了しました"
-4. boss1 → PRESIDENT: "全員完了しました"
-```
+1.  **PRESIDENT** → **boss1**: 「顧客管理システムを開発せよ」
+2.  **boss1**: `docs/specifications.md`を読み込み、タスクを計画。
+3.  **boss1**: Next.jsプロジェクトをセットアップ。
+4.  **boss1** → **workers**: 「UIを作れ」「ページを作れ」「APIを作れ」
+5.  **workers** → (コーディング) → **boss1**: 「UIできました」「ページできました」「APIできました」
+6.  **boss1** → **PRESIDENT**: 「開発が完了し、[URL]にデプロイしました」
 
 ## 🔧 手動操作
 
